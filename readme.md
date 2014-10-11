@@ -1,4 +1,5 @@
-天气羊基于cocos2d和cqwrap开发.同时，对cocos2d有相应的修改。
+天气羊基于cocos2d和cqwrap开发。同时，对cocos2d有相应的修改。可作为开发web端动画的一个模板
+
 开发涉及到几个相关的编译：
 1. cocos2d的编译
 	若需要对cocos2d进行修改，则需要进行重新编译。编译依赖ant，搭建好ant后，在cocos2d文件夹（即含有build.xml的文件夹）运行ant命令进行编辑即可，编译后的文件在lib目录。
