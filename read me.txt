@@ -7,4 +7,4 @@
 3. view的编译
 	开发的各个场景，最终需要编译成一个scene文件。编译同样依赖r.js，运行`r.js -o build_view.js`即可。编译后的文件在dist目录。
 4. plist的合并
-	为了解决跨域加载有一部分用户会失败的问题，采用了将plist的文本合并后通过hack以inline的方式引入进行解决。所以就有了将plist进行combo处理的一步。combo依赖nodejs，直接在根目录运行`node node_combo_plist.js`即可。编译后的文件在dist目录，同时也在modules/inc/weather/plist.json（方便qcms拉取）。
+	为了解决跨域加载有一部分用户会失败的问题，采用了将plist的文本合并后通过hack以inline的方式引入进行解决。所以就有了将plist进行combo处理的一步。combo依赖nodejs，直接在根目录运行`node node_combo_plist.js`即可。编译后的文件在dist目录。
