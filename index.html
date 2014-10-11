@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Cocos2d-html5 Hello World test</title>
+    <link rel="icon" type="image/GIF" href="res/favicon.ico"/>
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta name="viewport" content="user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="full-screen" content="yes"/>
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="360-fullscreen" content="true"/>
+    <style>
+        body, canvas, div {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -khtml-user-select: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+</head>
+<body style="padding:0; margin: 0;">
+<div style="width: 636px; height: 261px; overflow: hidden;">
+    <canvas id="gameCanvas" width="636" height="261"></canvas>
+</div>
+
+<script src="lib/jquery-1.10.2.js"></script>
+<script src="require.js"></script>
+<script type="text/javascript">
+    require.config({
+        waitSeconds: 100,
+        paths: {
+            'cocos2d': 'lib/Cocos2d-html5-v2.2.3.onebox.min',
+            'cqwrap/index': 'dist/cqwrap',
+            'src/weather_scene': 'dist/weather_scene'
+        },
+        shim: {
+            'cocos2d': {
+                exports: 'cc',
+                init: function(){
+                    cc.SlideTo = cc.ActionInterval.extend({
+                        _toHeight:null,
+                        _fromHeight:null,
+
+                        ctor:function () {
+                            cc.ActionInterval.prototype.ctor.call(this);
+                            this._toHeight = 0;
+                            this._fromHeight = 0;
+                        },
+
+                        initWithDuration:function (duration, height) {
+                            if (cc.ActionInterval.prototype.initWithDuration.call(this, duration)) {
+                                this._toHeight = height;
+                                return true;
+                            }
+                            return false;
+                        },
+
+                        clone:function () {
+                            var action = new cc.SlideTo();
+                            action.initWithDuration(this._duration, this._toHeight);
+                            return action;
+                        },
+
+                        update:function (time) {
+                            if (this._target._texture) {
+                                var fromHeight = this._fromHeight;
+                                var rect = this._target.getTextureRect();
+                                rect.height = fromHeight + (this._toHeight - fromHeight) * time;
+
+                                this._target.setTextureRect(rect);
+                            }
+                        },
+
+                        startWithTarget:function (target) {
+                            cc.ActionInterval.prototype.startWithTarget.call(this, target);
+                            if(target._texture){
+                                this._fromHeight = target.getTextureRect().height;
+                            }
+                        }
+                    });
+                    cc.SlideTo.create = function (duration, height) {
+                        var slideTo = new cc.SlideTo();
+                        slideTo.initWithDuration(duration, height);
+                        return slideTo;
+                    };
+                }
+            }
+        }
+    });
+</script>
+
+<!-- conf -->
+<script type="text/javascript">
+window.So = window.So || {onebox:{}};
+So.onebox.weather = {
+    app: null,
+    appConf: {
+        require: ['cqwrap/index', 'src/weather_scene'],
+        sceneMap: {
+            'sunday': 'src/view/sunday',
+            'sunnight': 'src/view/sunnight',
+            'overcastday': 'src/view/overcastday',
+            'rainday': 'src/view/rainday',
+            'dustday': 'src/view/dustday',
+            'cloudyday': 'src/view/cloudyday',
+            'bgScene': 'src/view/bgScene',
+            'warnScene': 'src/view/warnScene'
+        },
+        // resPath: 'res/pic/plist/',
+        // resPicPath: 'res/pic/plist/',
+        resPath: 'http://s0.qhimg.com/!eacc05ef/',
+        resPicPath: 'http://p0.qhimg.com/d/inn/eacc05ef/',
+        resAudioPath: 'res/audio/',
+        bgScenePath: 'res/weather/bg-s/',
+        subscribe: null,
+        tips: {},
+        tipsIndex: {
+            'sunday': [1,0],
+            'sunnight': [2,0],
+            'dustday': [3,0]
+        },
+        alert: '',
+        plist: ''
+    }
+};
+So.onebox.weather.appConf.subscribe = $({});
+</script>
+<!-- resource -->
+<script type="text/javascript">
+(function(){
+    var resPath = So.onebox.weather.appConf.resPath;
+    var resPicPath = So.onebox.weather.appConf.resPicPath;
+    So.onebox.weather.g_resources = {
+        'other': [
+            {src: resPath+'plist/other.css'},
+            {src: resPicPath+'plist/other.png'}
+        ],
+        'sunday': [
+            {src: resPath+'plist/sunday.css'},
+            {src: resPicPath+'plist/sunday.png'}
+        ],
+        'sunnight': [
+            {src: resPath+'plist/sunnight.css'},
+            {src: resPicPath+'plist/sunnight.png'}
+        ],
+        'overcastday': [
+            {src: resPath+'plist/overcastday.css'},
+            {src: resPicPath+'plist/overcastday.png'}
+        ],
+        'rainday': [
+            {src: resPath+'plist/rainday.css'},
+            {src: resPicPath+'plist/rainday.png'}
+        ],
+        'cloudyday': [
+            {src: resPath+'plist/cloudyday.css'},
+            {src: resPicPath+'plist/cloudyday.png'}
+        ],
+        'warnScene': [
+            {src: resPath+'plist/warn.css'},
+            {src: resPicPath+'plist/warn.png'}
+        ]
+    };
+
+    So.onebox.weather.appConf.preLoadRes = 'other';
+
+    // 添加背景资源
+    var wtype = '1-1';
+    var bgRes = [];
+    var bgScenePath = So.onebox.weather.appConf.bgScenePath;
+    wtype && $.each(wtype.split('|'), function(index, item){
+        bgRes.push({src: bgScenePath + item + '.png'});
+    });
+    So.onebox.weather.g_resources.bgRes = bgRes;
+})();
+</script>
+
+<script>
+    require(['main.js', 'index.js'])
+</script>
+</body>
+</html>
